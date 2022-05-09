@@ -101,16 +101,16 @@ public class FlutterBluetoothBasicPlugin implements MethodCallHandler, RequestPe
           pendingResult = result;
           break;
         }
-        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.BLUETOOTH_SCAN)
-                != PackageManager.PERMISSION_GRANTED) {
-          ActivityCompat.requestPermissions(
-                  activity,
-                  new String[] {Manifest.permission.BLUETOOTH_SCAN},
-                  REQUEST_SCAN_PERMISSIONS);
-          pendingCall = call;
-          pendingResult = result;
-          break;
-        }
+        int PERMISSION_ALL = 1; 
+        String[] PERMISSIONS = {
+          android.Manifest.permission.BLUETOOTH_SCAN, 
+          android.Manifest.permission.BLUETOOTH_CONNECT, 
+        };
+
+    if (!hasPermissions(this, PERMISSIONS)) {
+     ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_SCAN_PERMISSIONS);
+  }
+        
         startScan(call, result);
         break;
       }
@@ -137,6 +137,16 @@ public class FlutterBluetoothBasicPlugin implements MethodCallHandler, RequestPe
 
   }
 
+  public static boolean hasPermissions(Context context, String... permissions) {
+    if (context != null && permissions != null) {
+        for (String permission : permissions) {
+            if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
   private void getDevices(Result result){
     List<Map<String, Object>> devices = new ArrayList<>();
     for (BluetoothDevice device : mBluetoothAdapter.getBondedDevices()) {
