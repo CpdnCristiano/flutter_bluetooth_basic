@@ -39,6 +39,8 @@ public class FlutterBluetoothBasicPlugin implements MethodCallHandler, RequestPe
   private int id = 0;
   private ThreadPool threadPool;
   private static final int REQUEST_FINE_LOCATION_PERMISSIONS = 34;
+  private static final int REQUEST_SCAN_PERMISSIONS = 11037;
+
   private static final String NAMESPACE = "flutter_bluetooth_basic";
   private final Registrar registrar;
   private final Activity activity;
@@ -95,6 +97,16 @@ public class FlutterBluetoothBasicPlugin implements MethodCallHandler, RequestPe
                   activity,
                   new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
                   REQUEST_FINE_LOCATION_PERMISSIONS);
+          pendingCall = call;
+          pendingResult = result;
+          break;
+        }
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.BLUETOOTH_SCAN)
+                != PackageManager.PERMISSION_GRANTED) {
+          ActivityCompat.requestPermissions(
+                  activity,
+                  new String[] {Manifest.permission.BLUETOOTH_SCAN},
+                  REQUEST_SCAN_PERMISSIONS);
           pendingCall = call;
           pendingResult = result;
           break;
