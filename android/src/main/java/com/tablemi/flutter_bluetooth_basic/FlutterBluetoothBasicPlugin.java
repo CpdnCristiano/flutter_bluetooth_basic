@@ -121,7 +121,7 @@ public class FlutterBluetoothBasicPlugin
             android.Manifest.permission.BLUETOOTH_CONNECT,
           };
 
-          if (!hasPermissions(this, PERMISSIONS)) {
+          if (!hasPermissions(activity, PERMISSIONS)) {
             ActivityCompat.requestPermissions(
               activity,
               PERMISSIONS,
