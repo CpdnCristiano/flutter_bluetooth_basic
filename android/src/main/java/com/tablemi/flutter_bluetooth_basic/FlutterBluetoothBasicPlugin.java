@@ -121,11 +121,11 @@ public class FlutterBluetoothBasicPlugin
             android.Manifest.permission.BLUETOOTH_CONNECT,
           };
 
-          if (!hasPermissions(activity, PERMISSIONS)) {
+          if (!hasPermissions(activity, PERMISSIONS) && android.os.Build.VERSION.SDK_INT >= 31) {
             ActivityCompat.requestPermissions(
               activity,
               PERMISSIONS,
-              REQUEST_FINE_LOCATION_PERMISSIONS
+              REQUEST_SCAN_PERMISSIONS
             );
             pendingCall = call;
             pendingResult = result;
