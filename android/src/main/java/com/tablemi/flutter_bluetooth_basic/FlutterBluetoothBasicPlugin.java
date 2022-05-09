@@ -97,11 +97,12 @@ public class FlutterBluetoothBasicPlugin
       case "startScan": {
 
         if (android.os.Build.VERSION.SDK_INT >= 31) {
+          String[] PERMISSIONS = {
+              android.Manifest.permission.BLUETOOTH_SCAN,
+              android.Manifest.permission.BLUETOOTH_CONNECT,
+          };
           if (!hasPermissions(activity, PERMISSIONS)) {
-            String[] PERMISSIONS = {
-                android.Manifest.permission.BLUETOOTH_SCAN,
-                android.Manifest.permission.BLUETOOTH_CONNECT,
-            };
+
             // int ALL_PERMISSIONS = 1;
             ActivityCompat.requestPermissions(
                 activity,
