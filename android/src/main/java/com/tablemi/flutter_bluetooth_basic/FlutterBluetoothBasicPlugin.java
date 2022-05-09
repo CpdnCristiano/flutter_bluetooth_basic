@@ -40,7 +40,6 @@ public class FlutterBluetoothBasicPlugin
   private int id = 0;
   private ThreadPool threadPool;
   private static final int REQUEST_FINE_LOCATION_PERMISSIONS = 34;
-  private static final int REQUEST_SCAN_PERMISSIONS = 11037;
 
   private static final String NAMESPACE = "flutter_bluetooth_basic";
   private final Registrar registrar;
@@ -95,31 +94,23 @@ public class FlutterBluetoothBasicPlugin
         result.success(threadPool != null);
         break;
       case "startScan": {
-
         if (android.os.Build.VERSION.SDK_INT >= 31) {
-            if (ContextCompat.checkSelfPermission(
-              activity,
-              Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(
-                    activity,
-                    new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
-                    REQUEST_FINE_LOCATION_PERMISSIONS);
-            }
+
           String[] PERMISSIONS = {
-              android.Manifest.permission.BLUETOOTH_SCAN,
-              android.Manifest.permission.BLUETOOTH_CONNECT,
+              Manifest.permission.BLUETOOTH_SCAN,
+              Manifest.permission.BLUETOOTH_CONNECT,
+              Manifest.permission.ACCESS_FINE_LOCATION,
           };
           if (!hasPermissions(activity, PERMISSIONS)) {
-
-            // int ALL_PERMISSIONS = 1;
             ActivityCompat.requestPermissions(
                 activity,
                 PERMISSIONS,
-                REQUEST_SCAN_PERMISSIONS);
+                REQUEST_FINE_LOCATION_PERMISSIONS);
             pendingCall = call;
             pendingResult = result;
             break;
           }
+
         } else {
           if (ContextCompat.checkSelfPermission(
               activity,
@@ -350,16 +341,21 @@ public class FlutterBluetoothBasicPlugin
       String[] permissions,
       int[] grantResults) {
     if (requestCode == REQUEST_FINE_LOCATION_PERMISSIONS) {
-      if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-        startScan(pendingCall, pendingResult);
-      } else {
-        pendingResult.error(
-            "no_permissions",
-            "This app requires location permissions for scanning",
-            null);
-        pendingResult = null;
+      boolean granted = true;
+      for (int i = 0; i < permissions.length; i++) {
+        if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+          granted = false;
+          pendingResult.error(
+              "no_permissions",
+              "This app requires " + permissions[i] + " permissions for scanning",
+              null);
+          pendingResult = null;
+        }
       }
-      return true;
+      if (granted) {
+        startScan(pendingCall, pendingResult);
+      }
+      return granted;
     }
     return false;
   }
