@@ -86,8 +86,10 @@ public class FlutterBluetoothBasicPlugin
     this.activity = binding.getActivity();
     this.activityBinding = binding;
     this.activityBinding.addRequestPermissionsResultListener(this);
-    this.mBluetoothManager = (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
-    this.mBluetoothAdapter = mBluetoothManager != null ? mBluetoothManager.getAdapter() : null;
+    this.mBluetoothManager = (BluetoothManager) applicationContext.getSystemService(Context.BLUETOOTH_SERVICE);
+    if (this.mBluetoothManager != null) {
+      this.mBluetoothAdapter = this.mBluetoothManager.getAdapter();
+    }
   }
 
   @Override
