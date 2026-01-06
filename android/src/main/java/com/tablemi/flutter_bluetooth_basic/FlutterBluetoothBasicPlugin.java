@@ -65,7 +65,6 @@ public class FlutterBluetoothBasicPlugin
     this.channel = new MethodChannel(binding.getBinaryMessenger(), NAMESPACE + "/methods");
     this.stateChannel = new EventChannel(binding.getBinaryMessenger(), NAMESPACE + "/state");
     this.channel.setMethodCallHandler(this);
-    this.stateChannel.setStreamHandler(stateStreamHandler);
   }
 
   @Override
@@ -75,10 +74,7 @@ public class FlutterBluetoothBasicPlugin
       this.channel.setMethodCallHandler(null);
       this.channel = null;
     }
-    if (this.stateChannel != null) {
-      this.stateChannel.setStreamHandler(null);
-      this.stateChannel = null;
-    }
+    this.stateChannel = null;
   }
 
   @Override
@@ -89,6 +85,9 @@ public class FlutterBluetoothBasicPlugin
     this.mBluetoothManager = (BluetoothManager) applicationContext.getSystemService(Context.BLUETOOTH_SERVICE);
     if (this.mBluetoothManager != null) {
       this.mBluetoothAdapter = this.mBluetoothManager.getAdapter();
+    }
+    if (this.stateChannel != null) {
+      this.stateChannel.setStreamHandler(stateStreamHandler);
     }
   }
 
@@ -104,6 +103,9 @@ public class FlutterBluetoothBasicPlugin
 
   @Override
   public void onDetachedFromActivity() {
+    if (this.stateChannel != null) {
+      this.stateChannel.setStreamHandler(null);
+    }
     if (this.activityBinding != null) {
       this.activityBinding.removeRequestPermissionsResultListener(this);
       this.activityBinding = null;
