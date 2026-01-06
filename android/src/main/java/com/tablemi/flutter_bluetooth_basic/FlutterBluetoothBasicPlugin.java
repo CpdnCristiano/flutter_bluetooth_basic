@@ -65,6 +65,10 @@ public class FlutterBluetoothBasicPlugin
     this.channel = new MethodChannel(binding.getBinaryMessenger(), NAMESPACE + "/methods");
     this.stateChannel = new EventChannel(binding.getBinaryMessenger(), NAMESPACE + "/state");
     this.channel.setMethodCallHandler(this);
+    this.mBluetoothManager = (BluetoothManager) applicationContext.getSystemService(Context.BLUETOOTH_SERVICE);
+    if (this.mBluetoothManager != null) {
+      this.mBluetoothAdapter = this.mBluetoothManager.getAdapter();
+    }
   }
 
   @Override
@@ -82,10 +86,6 @@ public class FlutterBluetoothBasicPlugin
     this.activity = binding.getActivity();
     this.activityBinding = binding;
     this.activityBinding.addRequestPermissionsResultListener(this);
-    this.mBluetoothManager = (BluetoothManager) applicationContext.getSystemService(Context.BLUETOOTH_SERVICE);
-    if (this.mBluetoothManager != null) {
-      this.mBluetoothAdapter = this.mBluetoothManager.getAdapter();
-    }
     if (this.stateChannel != null) {
       this.stateChannel.setStreamHandler(stateStreamHandler);
     }
@@ -427,7 +427,7 @@ public class FlutterBluetoothBasicPlugin
     public void onListen(Object o, EventSink eventSink) {
       sink = eventSink;
       if (activity == null) {
-        sink.error("NO_ACTIVITY", "Activity is not attached", null);
+        sink.error("NO_ACTIVITY", "Bluetooth state monitoring requires an active Activity context", null);
         return;
       }
       IntentFilter filter = new IntentFilter(
