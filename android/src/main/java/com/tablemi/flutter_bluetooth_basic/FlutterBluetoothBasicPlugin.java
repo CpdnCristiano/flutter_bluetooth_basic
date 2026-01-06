@@ -56,7 +56,7 @@ public class FlutterBluetoothBasicPlugin
   private MethodCall pendingCall;
   private Result pendingResult;
 
-  // Default constructor for v2 embedding
+  // Default constructor required by Flutter v2 embedding API
   public FlutterBluetoothBasicPlugin() {}
 
   @Override
